@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletResponse;
 import java.net.URLEncoder;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author qy
@@ -41,6 +42,11 @@ public class DictController   {
         return Result.ok(dictService.findByParentId(parentId));
     }
 
+    /**
+     * 到处数据字典到Excel
+     * @param response
+     * @throws Exception
+     */
     @GetMapping("/exportData")
     public void exportData(HttpServletResponse response) throws Exception{
         //查询所有数据
@@ -51,6 +57,16 @@ public class DictController   {
         String fileName = URLEncoder.encode("数据字典", "UTF-8").replaceAll("\\+", "%20");
         response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + fileName + ".xlsx");
         EasyExcel.write(response.getOutputStream(), Dict.class).sheet("数据字典").doWrite(data);
+    }
+
+    /**
+     * 根据dict查询对应所有的子节点
+     * @param dictCode
+     * @return
+     */
+    @GetMapping("/findByDictCode/{dictCode}")
+    public Result findByDictCode(@PathVariable String dictCode){
+        return Result.ok(dictService.findByDictCode(dictCode));
     }
 
 //    @ApiOperation(value = "获取数据字典名称")

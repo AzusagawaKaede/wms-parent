@@ -23,8 +23,8 @@ import java.util.*;
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class GoodsTypeServiceImpl extends ServiceImpl<GoodsTypeMapper, GoodsType> implements GoodsTypeService {
 
-
-
+	@Resource
+	private GoodsTypeMapper goodsTypeMapper;
 
 	@Override
 	public String getNameById(Long id) {
@@ -32,9 +32,17 @@ public class GoodsTypeServiceImpl extends ServiceImpl<GoodsTypeMapper, GoodsType
 		return goodsType.getName();
 	}
 
-
-
-
-
-
+	/**
+	 * 根据父Id查询子节点GoodsType
+	 *
+	 * @param parentId
+	 * @return
+	 */
+	@Override
+	public List<GoodsType> findByParentId(Long parentId) {
+		if(parentId == null){
+			throw new RuntimeException("参数错误");
+		}
+		return goodsTypeMapper.findByParentId(parentId);
+	}
 }

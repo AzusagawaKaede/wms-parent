@@ -18,6 +18,13 @@ public interface DictService extends IService<Dict> {
     List<Dict> findByParentId(Long parentId);
 
     /**
+     * 根据编码对应的所有子节点
+     * @param dictCode
+     * @return
+     */
+    List<Dict> findByDictCode(String dictCode);
+
+    /**
      * 根据上级编码与值获取数据字典名称
      * @param parentDictCode
      * @param value

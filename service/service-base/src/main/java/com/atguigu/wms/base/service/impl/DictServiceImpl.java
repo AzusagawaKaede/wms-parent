@@ -18,13 +18,14 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.util.*;
 
 @Service
 public class DictServiceImpl extends ServiceImpl<DictMapper, Dict> implements DictService {
 
-    @Autowired
+    @Resource
     private DictMapper dictMapper;
 
     /**
@@ -57,10 +58,29 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, Dict> implements Di
      * @param parentId
      * @return
      */
-    @Cacheable(value = "dict", keyGenerator = "keyGenerator")
     @Override
+    @Cacheable(value = "dict", keyGenerator = "keyGenerator")
     public List<Dict> findByParentId(Long parentId) {
         return dictMapper.findByParentId(parentId);
+    }
+
+    /**
+     * 根据编码对应的所有子节点
+     *
+     * @param dictCode
+     * @return
+     */
+    @Override
+    @Cacheable(value = "dict", keyGenerator = "keyGenerator")
+    public List<Dict> findByDictCode(String dictCode) {
+        //查询编码对应的id
+        Dict dict = dictMapper.selectOne(
+                new LambdaQueryWrapper<Dict>()
+                        .eq(Dict::getDictCode, dictCode));
+        //根据id查询子节点
+        return dictMapper.selectList(
+                new LambdaQueryWrapper<Dict>()
+                        .eq(Dict::getParentId, dict.getId()));
     }
 
     //	@Cacheable(value = "dict",keyGenerator = "keyGenerator")

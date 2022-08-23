@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.atguigu.wms.base.mapper.ShipperInfoMapper">
+
+    <sql id="common">
+        SELECT
+            si.id,
+            si.NAME,
+            si.phone,
+            si.province_id,
+            si.city_id,
+            si.area_id,
+            si.address,
+            si.remark,
+            si.STATUS,
+            si.create_id,
+            si.create_name,
+            si.update_id,
+            si.update_name,
+            si.create_time,
+            si.update_time,
+            si.is_deleted,
+            di.name province_name,
+            di2.name city_name,
+            di3.name area_name
+        FROM
+            shipper_info si
+            left join dict_info di on si.province_id = di.id
+            left join dict_info di2 on si.city_id = di2.id
+            left join dict_info di3 on si.area_id = di3.id
+        WHERE
+            si.is_deleted = 0
+    </sql>
+
+
+    <select id="findPage" resultType="com.atguigu.wms.model.base.ShipperInfo">
+        <include refid="common"/>
+        <if test="shipperInfoQueryVo.keyword != '' and  shipperInfoQueryVo.keyword != null">
+            and (name like '%'${keyword}'%' or phone = #{keyword})
+        </if>
+        <if test="shipperInfoQueryVo.provinceId != '' and shipperInfoQueryVo.provinceId != null">
+            and province_id = #{provinceId}
+        </if>
+        <if test="shipperInfoQueryVo.cityId != '' and shipperInfoQueryVo.cityId != null">
+            and city_id = #{cityId}
+        </if>
+        <if test="shipperInfoQueryVo.areaId != '' and shipperInfoQueryVo.areaId != null">
+            and area_id = #{areaId}
+        </if>
+    </select>
+
+    <select id="get" resultType="com.atguigu.wms.model.base.ShipperInfo">
+        <include refid="common"/>
+        and si.id = #{id}
+    </select>
+</mapper>

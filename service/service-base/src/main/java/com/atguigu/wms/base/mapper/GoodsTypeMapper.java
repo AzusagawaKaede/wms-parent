@@ -9,8 +9,16 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Mapper
 @Repository
 public interface GoodsTypeMapper extends BaseMapper<GoodsType> {
 
+    /**
+     * 根据Id查询子节点GoodType
+     * @param parentId
+     * @return
+     */
+    List<GoodsType> findByParentId(Long parentId);
 }

@@ -13,4 +13,10 @@ public interface GoodsTypeService extends IService<GoodsType> {
 
     String getNameById(Long id);
 
+    /**
+     * 根据父Id查询子节点GoodsType
+     * @param parentId
+     * @return
+     */
+    List<GoodsType> findByParentId(Long parentId);
 }
