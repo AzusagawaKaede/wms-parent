@@ -53,8 +53,6 @@ public class DictController   {
         EasyExcel.write(response.getOutputStream(), Dict.class).sheet("数据字典").doWrite(data);
     }
 
-
-
 //    @ApiOperation(value = "获取数据字典名称")
 //    @GetMapping(value = "/getName/{parentDictCode}/{value}")
 //    public String getName(
