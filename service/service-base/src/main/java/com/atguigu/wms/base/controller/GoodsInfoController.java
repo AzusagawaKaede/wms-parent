@@ -32,10 +32,21 @@ public class GoodsInfoController {
 	@Resource
 	private GoodsInfoService goodsInfoService;
 
-
-
-
-
+	/**
+	 * 分页条件查询
+	 * @param pageNum
+	 * @param pageSize
+	 * @param goodsInfoQueryVo
+	 * @return
+	 */
+	@GetMapping("/{pageNum}/{pageSize}")
+	public Result findPage(@PathVariable Long pageNum,
+						   @PathVariable Long pageSize,
+						   GoodsInfoQueryVo goodsInfoQueryVo) {
+		Page<GoodsInfo> page = new Page<>(pageNum, pageSize);
+		goodsInfoService.findPage(page, goodsInfoQueryVo);
+		return Result.ok(page);
+	}
 
 	@ApiOperation(value = "根据关键字查看")
 	@GetMapping("findByKeyword/{keyword}")
@@ -56,21 +67,21 @@ public class GoodsInfoController {
 	}
 
 
-	@ApiOperation(value = "获取分页列表")
-	@PostMapping("findPage/{page}/{limit}")
-	public PageVo<GoodsInfo> findPage(
-			@ApiParam(name = "page", value = "当前页码", required = true)
-			@PathVariable Long page,
-
-			@ApiParam(name = "limit", value = "每页记录数", required = true)
-			@PathVariable Long limit,
-
-			@ApiParam(name = "goodsInfoVo", value = "查询对象", required = false)
-					@RequestBody GoodsInfoQueryVo goodsInfoQueryVo) {
-		Page<GoodsInfo> pageParam = new Page<>(page, limit);
-		//IPage<GoodsInfo> pageModel = goodsInfoService.selectPage(pageParam, goodsInfoQueryVo);
-		return new PageVo<>(null);
-	}
+//	@ApiOperation(value = "获取分页列表")
+//	@PostMapping("findPage/{page}/{limit}")
+//	public PageVo<GoodsInfo> findPage(
+//			@ApiParam(name = "page", value = "当前页码", required = true)
+//			@PathVariable Long page,
+//
+//			@ApiParam(name = "limit", value = "每页记录数", required = true)
+//			@PathVariable Long limit,
+//
+//			@ApiParam(name = "goodsInfoVo", value = "查询对象", required = false)
+//					@RequestBody GoodsInfoQueryVo goodsInfoQueryVo) {
+//		Page<GoodsInfo> pageParam = new Page<>(page, limit);
+//		//IPage<GoodsInfo> pageModel = goodsInfoService.selectPage(pageParam, goodsInfoQueryVo);
+//		return new PageVo<>(null);
+//	}
 
 	@ApiOperation(value = "获取")
 	@GetMapping("getGoodsInfo/{id}")

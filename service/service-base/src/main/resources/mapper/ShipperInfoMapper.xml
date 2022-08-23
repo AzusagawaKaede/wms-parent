@@ -38,16 +38,16 @@
     <select id="findPage" resultType="com.atguigu.wms.model.base.ShipperInfo">
         <include refid="common"/>
         <if test="shipperInfoQueryVo.keyword != '' and  shipperInfoQueryVo.keyword != null">
-            and (name like '%'${keyword}'%' or phone = #{keyword})
+            and (si.name like '%${shipperInfoQueryVo.keyword}%' or si.phone = #{shipperInfoQueryVo.keyword})
         </if>
         <if test="shipperInfoQueryVo.provinceId != '' and shipperInfoQueryVo.provinceId != null">
-            and province_id = #{provinceId}
+            and si.province_id = #{shipperInfoQueryVo.provinceId}
         </if>
         <if test="shipperInfoQueryVo.cityId != '' and shipperInfoQueryVo.cityId != null">
-            and city_id = #{cityId}
+            and si.city_id = #{shipperInfoQueryVo.cityId}
         </if>
         <if test="shipperInfoQueryVo.areaId != '' and shipperInfoQueryVo.areaId != null">
-            and area_id = #{areaId}
+            and si.area_id = #{shipperInfoQueryVo.areaId}
         </if>
     </select>
 

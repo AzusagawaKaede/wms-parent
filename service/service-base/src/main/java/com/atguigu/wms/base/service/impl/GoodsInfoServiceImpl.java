@@ -6,6 +6,7 @@ import com.atguigu.wms.common.result.ResultCodeEnum;
 import com.atguigu.wms.model.base.*;
 import com.atguigu.wms.vo.base.GoodsInfoQueryVo;
 import com.atguigu.wms.base.mapper.GoodsInfoMapper;
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -29,20 +30,49 @@ public class GoodsInfoServiceImpl extends ServiceImpl<GoodsInfoMapper, GoodsInfo
 
 	@Resource
 	private GoodsInfoMapper goodsInfoMapper;
-
 	@Resource
 	private DictService dictService;
-
 	@Resource
 	private WarehouseInfoService warehouseInfoService;
-
 	@Resource
 	private GoodsTypeService goodsTypeService;
-
 	@Resource
 	private GoodsSkuRelationService goodsSkuRelationService;
 
-
+	/**
+	 * 分页条件查询
+	 *
+	 * @param page
+	 * @param goodsInfoQueryVo
+	 * @return
+	 */
+	@Override
+	public Page<GoodsInfo> findPage(Page<GoodsInfo> page, GoodsInfoQueryVo goodsInfoQueryVo) {
+		//判断Vo是否为空，为空则是第一次查询，直接分页
+		if(goodsInfoQueryVo == null){
+			return goodsInfoMapper.selectPage(page, null);
+		}
+		//不为空，拼接查询条件
+		QueryWrapper<GoodsInfo> wrapper = new QueryWrapper<>();
+		//拼接关键字，对应name，code，barcode
+		if(goodsInfoQueryVo.getKeyword() != null){
+			String keyword = goodsInfoQueryVo.getKeyword();
+			wrapper.and(Wrapper -> Wrapper.like("name", keyword).or().eq("code", keyword).or().eq("barcode", keyword));
+		}
+		//拼接类型Id
+		if(goodsInfoQueryVo.getGoodsTypeId() != null){
+			wrapper.eq("goods_type_id", goodsInfoQueryVo.getGoodsTypeId());
+		}
+		//拼接温度类型
+		if(goodsInfoQueryVo.getTemperatureTypeId() != null){
+			wrapper.eq("temperature_type_id", goodsInfoQueryVo.getTemperatureTypeId());
+		}
+		//拼接状态
+		if(goodsInfoQueryVo.getStatus() != null){
+			wrapper.eq("status", goodsInfoQueryVo.getStatus());
+		}
+		return goodsInfoMapper.selectPage(page, wrapper);
+	}
 
 	private GoodsInfo packageGoodsInfo(GoodsInfo item) {
 		item.setTemperatureTypeName(dictService.getNameById(item.getTemperatureTypeId()));
