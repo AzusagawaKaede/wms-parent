@@ -13,5 +13,11 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface WarehouseInfoMapper extends BaseMapper<WarehouseInfo> {
 
-
+    /**
+     * 分页连表条件查询WarehouseInfo
+     * @param page
+     * @param warehouseInfoQueryVo
+     * @return
+     */
+    Page<WarehouseInfo> findPage(Page<WarehouseInfo> page, @Param("warehouseInfoQueryVo") WarehouseInfoQueryVo warehouseInfoQueryVo);
 }

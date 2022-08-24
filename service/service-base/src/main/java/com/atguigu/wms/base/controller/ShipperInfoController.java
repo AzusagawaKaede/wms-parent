@@ -45,6 +45,9 @@ public class ShipperInfoController {
      */
     @PostMapping("/save")
     public Result save(@RequestBody ShipperInfo shipperInfo){
+        if(shipperInfo == null){
+            return Result.fail("参数错误");
+        }
         boolean save = shipperInfoService.save(shipperInfo);
         if(save){
             return Result.ok();
@@ -71,6 +74,9 @@ public class ShipperInfoController {
      */
     @PutMapping("/update")
     public Result update(@RequestBody ShipperInfo shipperInfo){
+        if(shipperInfo == null || shipperInfo.getId() == null){
+            return Result.fail("参数错误");
+        }
         boolean update = shipperInfoService.updateById(shipperInfo);
         if(update){
             return Result.ok();

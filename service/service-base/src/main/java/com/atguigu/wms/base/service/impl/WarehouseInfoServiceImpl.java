@@ -29,23 +29,34 @@ import java.util.stream.Collectors;
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class WarehouseInfoServiceImpl extends ServiceImpl<WarehouseInfoMapper, WarehouseInfo> implements WarehouseInfoService {
 
-
-
 	@Resource
 	private DictService dictService;
-
 	@Resource
 	private StoreareaInfoService storeareaInfoService;
-	
 	@Resource
 	private StoreshelfInfoService storeshelfInfoService;
-
 	@Resource
 	private StorehouseInfoService storehouseInfoService;
+	@Resource
+	private WarehouseInfoMapper warehouseInfoMapper;
 
-
-
-
+	/**
+	 * 分页条件连表查询warehouseInfo
+	 *
+	 * @param page
+	 * @param warehouseInfoQueryVo
+	 * @return
+	 */
+	@Override
+	public Page<WarehouseInfo> findPage(Page<WarehouseInfo> page, WarehouseInfoQueryVo warehouseInfoQueryVo) {
+		//判断Vo是否为空，Vo不是必填项
+		if(warehouseInfoQueryVo == null){
+			//为null，初始化一下再扔进mapper
+			warehouseInfoQueryVo = new WarehouseInfoQueryVo();
+		}
+		//分页连表查询
+		return warehouseInfoMapper.findPage(page, warehouseInfoQueryVo);
+	}
 
 	@Override
 	public String getNameById(Long id) {
@@ -53,8 +64,6 @@ public class WarehouseInfoServiceImpl extends ServiceImpl<WarehouseInfoMapper, W
 		WarehouseInfo warehouseInfo = this.getById(id);
 		return warehouseInfo.getName();
 	}
-
-
 
 	//@Cacheable(value = "warehouseInfo",keyGenerator = "keyGenerator")
 	@Override
@@ -204,9 +213,5 @@ public class WarehouseInfoServiceImpl extends ServiceImpl<WarehouseInfoMapper, W
 //		queryWrapper.select(WarehouseInfo::getId);
 //		return this.list(queryWrapper).stream().map(WarehouseInfo::getId).collect(Collectors.toList());
 //	}
-
-
-
-
 
 }

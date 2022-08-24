@@ -14,6 +14,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -47,6 +48,7 @@ public class GoodsTypeServiceImpl extends ServiceImpl<GoodsTypeMapper, GoodsType
 	 * @return
 	 */
 	@Override
+	@Cacheable(value = "goodsType", keyGenerator = "keyGenerator")
 	public List<GoodsType> findNodes() {
 		//所有元素
 		List<GoodsType> allGoodsTypes = goodsTypeMapper.findNotes();

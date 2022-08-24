@@ -13,7 +13,13 @@ import java.util.Set;
 
 public interface WarehouseInfoService extends IService<WarehouseInfo> {
 
-
+    /**
+     * 分页条件连表查询warehouseInfo
+     * @param page
+     * @param warehouseInfoQueryVo
+     * @return
+     */
+    Page<WarehouseInfo> findPage(Page<WarehouseInfo> page, WarehouseInfoQueryVo warehouseInfoQueryVo);
 
     String getNameById(Long id);
 
@@ -22,9 +28,5 @@ public interface WarehouseInfoService extends IService<WarehouseInfo> {
     List<String> findNameByIdList(List<Long> idSet);
 
     List<Long> findPriorityWarehouseIdList(OutOrderAddressVo outOrderAddressVo);
-
-
-
-
 
 }

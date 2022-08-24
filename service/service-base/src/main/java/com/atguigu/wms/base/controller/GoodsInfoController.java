@@ -55,6 +55,9 @@ public class GoodsInfoController {
      */
     @PostMapping("/save")
     public Result save(@RequestBody GoodsInfo goodsInfo) {
+        if(goodsInfo == null){
+            return Result.fail("参数错误");
+        }
         Boolean insert = goodsInfoService.insert(goodsInfo);
         if (insert) {
             return Result.ok();
@@ -82,6 +85,9 @@ public class GoodsInfoController {
      */
     @PutMapping("/update")
     public Result update(@RequestBody GoodsInfo goodsInfo) {
+        if(goodsInfo == null || goodsInfo.getId() == null){
+            return Result.fail("参数错误");
+        }
         Boolean update = goodsInfoService.updateGoodsInfo(goodsInfo);
         if (update) {
             return Result.ok();

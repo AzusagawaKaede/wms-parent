@@ -13,7 +13,7 @@ public class WarehouseInfoQueryVo {
 	private String name;
 
 	@ApiModelProperty(value = "仓库类型：（1：中心仓库 2：区域仓库）")
-	private Boolean type;
+	private Integer type;
 
 	@ApiModelProperty(value = "province")
 	private Long provinceId;
