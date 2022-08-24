@@ -53,4 +53,20 @@ public interface WarehouseInfoMapper extends BaseMapper<WarehouseInfo> {
      */
     @Update("update warehouse_info set storeshelf_count = storeshelf_count - 1 where id = #{warehouseId}")
     int decreaseStoreshelf(Long warehouseId);
+
+    /**
+     * 新增库区
+     * @param warehouseId
+     * @return
+     */
+    @Update("update warehouse_info set storehouse_count = storehouse_count + 1 where id = #{warehouseId}")
+    int addStoreStorehouse(Long warehouseId);
+
+    /**
+     * 减少库区
+     * @param warehouseId
+     * @return
+     */
+    @Update("update warehouse_info set storehouse_count = storehouse_count - 1 where id = #{warehouseId}")
+    int decreaseStorehouse(Long warehouseId);
 }

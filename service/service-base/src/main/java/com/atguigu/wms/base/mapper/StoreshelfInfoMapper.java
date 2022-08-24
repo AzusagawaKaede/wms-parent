@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Update;
 import org.springframework.stereotype.Repository;
 
 @Mapper
@@ -17,8 +18,24 @@ public interface StoreshelfInfoMapper extends BaseMapper<StoreshelfInfo> {
     /**
      * 分页条件查询
      * @param page
-     * @param storeareaInfoQueryVo
+     * @param storeshelfInfoQueryVo
      * @return
      */
     Page<StoreshelfInfo> findPage(Page<StoreshelfInfo> page, @Param("storeshelfInfoQueryVo") StoreshelfInfoQueryVo storeshelfInfoQueryVo);
+
+    /**
+     * 新增库位
+     * @param storeareaId
+     * @return
+     */
+    @Update("update storeshelf_info set storehouse_count = storehouse_count + 1 where id = #{storeareaId}")
+    int addStoreStorehouse(Long storeareaId);
+
+    /**
+     * 减少库位
+     * @param storeareaId
+     * @return
+     */
+    @Update("update storeshelf_info set storehouse_count = storehouse_count - 1 where id = #{storeareaId}")
+    int decreaseStorehouse(Long storeareaId);
 }

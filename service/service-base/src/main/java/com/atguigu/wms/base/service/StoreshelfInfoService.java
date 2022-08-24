@@ -39,6 +39,20 @@ public interface StoreshelfInfoService extends IService<StoreshelfInfo> {
      */
     Boolean removeStoreshelfInfo(Long id);
 
+    /**
+     * 库位-1
+     * @param warehouseId
+     * @return
+     */
+    int decreaseStorehouse(Long warehouseId);
+
+    /**
+     * 库位+1
+     * @param warehouseId
+     * @return
+     */
+    int addStoreStorehouse(Long warehouseId);
+
     String getNameById(Long id);
 
 }

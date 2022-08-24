@@ -37,4 +37,20 @@ public interface StoreareaInfoMapper extends BaseMapper<StoreareaInfo> {
      */
     @Update("update storearea_info set storeshelf_count = storeshelf_count - 1 where id = #{storeareaId}")
     int decrease(Long storeareaId);
+
+    /**
+     * 新增库位
+     * @param storeareaId
+     * @return
+     */
+    @Update("update storearea_info set storehouse_count = storehouse_count + 1 where id = #{storeareaId}")
+    int addStoreStorehouse(Long storeareaId);
+
+    /**
+     * 减少库位
+     * @param storeareaId
+     * @return
+     */
+    @Update("update storearea_info set storehouse_count = storehouse_count - 1 where id = #{storeareaId}")
+    int decreaseStorehouse(Long storeareaId);
 }

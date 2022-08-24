@@ -158,6 +158,28 @@ public class StoreareaInfoServiceImpl extends ServiceImpl<StoreareaInfoMapper, S
     }
 
     /**
+     * 库位-1
+     *
+     * @param storeareaId
+     * @return
+     */
+    @Override
+    public int decreaseStorehouse(Long storeareaId) {
+        return storeareaInfoMapper.decreaseStorehouse(storeareaId);
+    }
+
+    /**
+     * 库位+1
+     *
+     * @param storeareaId
+     * @return
+     */
+    @Override
+    public int addStoreStorehouse(Long storeareaId) {
+        return storeareaInfoMapper.addStoreStorehouse(storeareaId);
+    }
+
+    /**
      * 库区-1
      *
      * @param storeareaId

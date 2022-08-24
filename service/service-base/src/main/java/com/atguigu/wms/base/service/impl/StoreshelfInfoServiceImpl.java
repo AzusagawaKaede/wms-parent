@@ -148,6 +148,28 @@ public class StoreshelfInfoServiceImpl extends ServiceImpl<StoreshelfInfoMapper,
         return true;
     }
 
+    /**
+     * +1
+     *
+     * @param storeareaId
+     * @return
+     */
+    @Override
+    public int addStoreStorehouse(Long storeareaId) {
+        return storeshelfInfoMapper.addStoreStorehouse(storeareaId);
+    }
+
+    /**
+     * 库区-1
+     *
+     * @param storeareaId
+     * @return
+     */
+    @Override
+    public int decreaseStorehouse(Long storeareaId) {
+        return storeshelfInfoMapper.decreaseStorehouse(storeareaId);
+    }
+
     @Cacheable(value = "storeshelfInfo", keyGenerator = "keyGenerator")
     @Override
     public String getNameById(Long id) {
