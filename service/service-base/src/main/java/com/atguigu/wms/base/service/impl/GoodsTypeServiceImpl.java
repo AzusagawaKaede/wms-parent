@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @SuppressWarnings({"unchecked", "rawtypes"})
@@ -25,12 +26,6 @@ public class GoodsTypeServiceImpl extends ServiceImpl<GoodsTypeMapper, GoodsType
 
 	@Resource
 	private GoodsTypeMapper goodsTypeMapper;
-
-	@Override
-	public String getNameById(Long id) {
-		GoodsType goodsType = this.getById(id);
-		return goodsType.getName();
-	}
 
 	/**
 	 * 根据父Id查询子节点GoodsType
@@ -45,4 +40,45 @@ public class GoodsTypeServiceImpl extends ServiceImpl<GoodsTypeMapper, GoodsType
 		}
 		return goodsTypeMapper.findByParentId(parentId);
 	}
+
+	/**
+	 * 查询一二三三级分类
+	 *
+	 * @return
+	 */
+	@Override
+	public List<GoodsType> findNodes() {
+		//所有元素
+		List<GoodsType> allGoodsTypes = goodsTypeMapper.findNotes();
+		//定义一级节点集合
+		List<GoodsType> result = new ArrayList<>();
+
+		//找到所有的根节点
+		allGoodsTypes.stream().forEach(l1goodType -> {
+			//保存根节点
+			if(l1goodType.getParentId() == 0){
+				result.add(l1goodType);
+			}
+
+			if(l1goodType.isHasChildren()){
+				//构建树
+				List<GoodsType> children = new ArrayList<>();
+				allGoodsTypes.stream().forEach(goodsType -> {
+					if(goodsType.getParentId().equals(l1goodType.getId())){
+						children.add(goodsType);
+					}
+				});
+				l1goodType.setChildren(children);
+			}
+		});
+
+		return result;
+	}
+
+	@Override
+	public String getNameById(Long id) {
+		GoodsType goodsType = this.getById(id);
+		return goodsType.getName();
+	}
+
 }

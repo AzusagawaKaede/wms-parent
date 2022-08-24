@@ -24,4 +24,27 @@
         WHERE
             parent_id = #{parentId}
     </select>
+
+    <select id="findNotes" resultType="com.atguigu.wms.model.base.GoodsType">
+        SELECT
+            id,
+            id value,
+            NAME,
+            NAME label,
+            parent_id,
+            status
+            create_id,
+            create_name,
+            update_id,
+            update_name,
+            create_time,
+            update_time,
+            is_deleted,
+        IF
+            (( SELECT count( 1 ) FROM goods_type WHERE parent_id = gt.id )> 0, TRUE, FALSE ) has_children
+        FROM
+            goods_type gt
+    </select>
+
+
 </mapper>

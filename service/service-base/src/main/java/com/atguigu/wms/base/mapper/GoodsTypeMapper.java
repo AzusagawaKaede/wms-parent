@@ -21,4 +21,11 @@ public interface GoodsTypeMapper extends BaseMapper<GoodsType> {
      * @return
      */
     List<GoodsType> findByParentId(Long parentId);
+
+    /**
+     * 查询所有GoodsType节点
+     * @return
+     */
+    List<GoodsType> findNotes();
+
 }

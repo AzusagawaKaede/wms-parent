@@ -31,5 +31,10 @@ public class GoodsTypeController {
         return Result.ok(goodsTypeService.findByParentId(parentId));
     }
 
+    @GetMapping("/findNodes")
+    public Result findNodes(){
+        return Result.ok(goodsTypeService.findNodes());
+    }
+
 }
 

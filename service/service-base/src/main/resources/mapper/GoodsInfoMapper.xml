@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.atguigu.wms.base.mapper.GoodsInfoMapper">
+
+    <sql id="common">
+        SELECT
+            gi.*,
+            gsr.sku_id,
+            gt.NAME goods_type_name,
+            di.NAME inspect_type_name,
+            di2.NAME temperature_type_name,
+            di3.NAME unit_name,
+            di4.NAME base_unit_name
+        FROM
+            goods_info gi
+            LEFT JOIN goods_sku_relation gsr ON gi.id = gsr.goods_id
+            LEFT JOIN goods_type gt ON gi.goods_type_id = gt.id
+            LEFT JOIN dict_info di ON gi.inspect_type_id = di.id
+            LEFT JOIN dict_info di2 ON gi.temperature_type_id = di2.id
+            LEFT JOIN dict_info di3 ON gi.unit_id = di3.id
+            LEFT JOIN dict_info di4 ON gi.base_unit_id = di4.id
+        where
+            gi.is_deleted = 0
+    </sql>
+
+    <select id="findPage" resultType="com.atguigu.wms.model.base.GoodsInfo">
+        <include refid="common"/>
+        <if test="goodsInfoQueryVo.keyword != '' and goodsInfoQueryVo.keyword != null">
+            and (gi.name like '%${goodsInfoQueryVo.keyword}%' or gi.code = #{goodsInfoQueryVo.keyword} or barcode =
+            #{goodsInfoQueryVo.keyword})
+        </if>
+        <if test="goodsInfoQueryVo.goodsTypeId != '' and goodsInfoQueryVo.goodsTypeId != null">
+            and gi.goods_type_id = #{goodsInfoQueryVo.goodsTypeId}
+        </if>
+        <if test="goodsInfoQueryVo.temperatureTypeId != '' and goodsInfoQueryVo.temperatureTypeId != null">
+            and gi.temperature_type_id = #{goodsInfoQueryVo.temperatureTypeId}
+        </if>
+        <if test="goodsInfoQueryVo.status != '' and goodsInfoQueryVo.status != null">
+            and gi.status = #{goodsInfoQueryVo.status}
+        </if>
+    </select>
+
+    <select id="get" resultType="com.atguigu.wms.model.base.GoodsInfo">
+        <include refid="common"/>
+        and gi.id = #{id}
+    </select>
+</mapper>

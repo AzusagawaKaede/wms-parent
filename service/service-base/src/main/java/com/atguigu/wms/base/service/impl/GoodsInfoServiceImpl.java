@@ -19,120 +19,226 @@ import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
+@Transactional(rollbackFor = Exception.class)
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class GoodsInfoServiceImpl extends ServiceImpl<GoodsInfoMapper, GoodsInfo> implements GoodsInfoService {
 
-	@Resource
-	private GoodsInfoMapper goodsInfoMapper;
-	@Resource
-	private DictService dictService;
-	@Resource
-	private WarehouseInfoService warehouseInfoService;
-	@Resource
-	private GoodsTypeService goodsTypeService;
-	@Resource
-	private GoodsSkuRelationService goodsSkuRelationService;
+    @Resource
+    private GoodsInfoMapper goodsInfoMapper;
+    @Resource
+    private DictService dictService;
+    @Resource
+    private WarehouseInfoService warehouseInfoService;
+    @Resource
+    private GoodsTypeService goodsTypeService;
+    @Resource
+    private GoodsSkuRelationService goodsSkuRelationService;
 
-	/**
-	 * 分页条件查询
-	 *
-	 * @param page
-	 * @param goodsInfoQueryVo
-	 * @return
-	 */
-	@Override
-	public Page<GoodsInfo> findPage(Page<GoodsInfo> page, GoodsInfoQueryVo goodsInfoQueryVo) {
-		//判断Vo是否为空，为空则是第一次查询，直接分页
-		if(goodsInfoQueryVo == null){
-			return goodsInfoMapper.selectPage(page, null);
-		}
-		//不为空，拼接查询条件
-		QueryWrapper<GoodsInfo> wrapper = new QueryWrapper<>();
-		//拼接关键字，对应name，code，barcode
-		if(goodsInfoQueryVo.getKeyword() != null){
-			String keyword = goodsInfoQueryVo.getKeyword();
-			wrapper.and(Wrapper -> Wrapper.like("name", keyword).or().eq("code", keyword).or().eq("barcode", keyword));
-		}
-		//拼接类型Id
-		if(goodsInfoQueryVo.getGoodsTypeId() != null){
-			wrapper.eq("goods_type_id", goodsInfoQueryVo.getGoodsTypeId());
-		}
-		//拼接温度类型
-		if(goodsInfoQueryVo.getTemperatureTypeId() != null){
-			wrapper.eq("temperature_type_id", goodsInfoQueryVo.getTemperatureTypeId());
-		}
-		//拼接状态
-		if(goodsInfoQueryVo.getStatus() != null){
-			wrapper.eq("status", goodsInfoQueryVo.getStatus());
-		}
-		return goodsInfoMapper.selectPage(page, wrapper);
-	}
+    /**
+     * 分页条件查询
+     *
+     * @param page
+     * @param goodsInfoQueryVo
+     * @return
+     */
+    @Override
+    public Page<GoodsInfo> findPage(Page<GoodsInfo> page, GoodsInfoQueryVo goodsInfoQueryVo) {
+        //分页连表查询
+        return goodsInfoMapper.findPage(page, goodsInfoQueryVo);
+    }
 
-	private GoodsInfo packageGoodsInfo(GoodsInfo item) {
-		item.setTemperatureTypeName(dictService.getNameById(item.getTemperatureTypeId()));
-		item.setInspectTypeName(dictService.getNameById(item.getInspectTypeId()));
-		item.setGoodsTypeName(goodsTypeService.getNameById(item.getGoodsTypeId()));
-		item.setUnitName(dictService.getNameById(item.getUnitId()));
-		item.setBaseUnitName(dictService.getNameById(item.getBaseUnitId()));
-		return item;
-	}
+    /**
+     * 新增货品
+     *
+     * @param goodsInfo
+     * @return
+     */
+    @Override
+    public Boolean insert(GoodsInfo goodsInfo) {
+        //参数校验
+        if (goodsInfo == null) {
+            throw new RuntimeException("参数错误");
+        }
+        //判断skuId是否已经被关联过
+        GoodsSkuRelation relation = goodsSkuRelationService.getBySkuId(goodsInfo.getSkuId());
+        if (relation != null) {
+            //说明被关联过
+            return false;
+        }
+        //没有关联过则新增goods_info和goods_sku_relation
+        goodsInfo.setCreateId(1L);
+        goodsInfo.setCreateName("admin");
+        goodsInfo.setUpdateId(1L);
+        goodsInfo.setUpdateName("admin");
+        goodsInfo.setCreateTime(new Date());
+        goodsInfo.setUpdateTime(new Date());
+        goodsInfo.setIsDeleted(0);
+        int insert = goodsInfoMapper.insert(goodsInfo);
+        if (insert <= 0) {
+            throw new RuntimeException("新增失败");
+        }
+        //新增关系表
+        relation = new GoodsSkuRelation();
+        relation.setCreateId(1L);
+        relation.setCreateName("admin");
+        relation.setUpdateId(1L);
+        relation.setUpdateName("admin");
+        relation.setCreateTime(new Date());
+        relation.setUpdateTime(new Date());
+        relation.setIsDeleted(0);
+        relation.setGoodsId(goodsInfo.getId());
+        relation.setSkuId(goodsInfo.getSkuId());
+        boolean save = goodsSkuRelationService.save(relation);
+        if (!save) {
+            throw new RuntimeException("绑定失败");
+        }
+        return true;
+    }
 
-	@Override
-	public List<GoodsInfo> findByKeyword(String keyword) {
-		LambdaQueryWrapper<GoodsInfo> queryWrapper = new LambdaQueryWrapper();
-		queryWrapper.like(GoodsInfo::getName, keyword);
-		List<GoodsInfo> list = this.list(queryWrapper);
-		list.forEach(item -> {
-			this.packageGoodsInfo(item);
-		});
-		return list;
-	}
+    /**
+     * 根据id查询货品
+     *
+     * @param id
+     * @return
+     */
+    @Override
+    public GoodsInfo get(Long id) {
+        return goodsInfoMapper.get(id);
+    }
 
-	@Override
-	public GoodsInfo getGoodsInfo(Long id) {
-		GoodsInfo goodsInfo = this.getById(id);
-		GoodsSkuRelation goodsSkuRelation = goodsSkuRelationService.getByGoodsId(id);
-		if(null != goodsSkuRelation) {
-			goodsInfo.setSkuId(goodsSkuRelation.getSkuId());
-		}
-		return this.packageGoodsInfo(goodsInfo);
-	}
+    /**
+     * 更新货品
+     *
+     * @param goodsInfo
+     * @return
+     */
+    @Override
+    public Boolean updateGoodsInfo(GoodsInfo goodsInfo) {
+        //参数校验
+        if (goodsInfo == null) {
+            throw new RuntimeException("参数错误");
+        }
+        //更新goods_info
+        goodsInfo.setUpdateId(1L);
+        goodsInfo.setUpdateName("admin");
+        goodsInfo.setUpdateTime(new Date());
+        int update = goodsInfoMapper.updateById(goodsInfo);
+        if (update < 0) {
+            throw new RuntimeException("更新失败");
+        }
+        //更新goods_sku_relation表，一个skuId绑定一个goodsId，因此根据goodsId查询即可
+        GoodsSkuRelation relation = goodsSkuRelationService.getByGoodsId(goodsInfo.getId());
+        relation.setUpdateId(1L);
+        relation.setUpdateName("admin");
+        relation.setUpdateTime(new Date());
+        relation.setSkuId(goodsInfo.getSkuId());
+        boolean save = goodsSkuRelationService.updateById(relation);
+        if (!save) {
+            throw new RuntimeException("更新失败");
+        }
+        return true;
+    }
 
-	@Override
-	public GoodsInfo getGoodsInfoBySkuId(Long skuId) {
-		GoodsSkuRelation goodsSkuRelation = goodsSkuRelationService.getBySkuId(skuId);
-		if(null == goodsSkuRelation) return null;
-		GoodsInfo goodsInfo = this.getById(goodsSkuRelation.getGoodsId());
-		if(null != goodsInfo) {
-			goodsInfo.setSkuId(skuId);
-		}
-		return goodsInfo;
-	}
+    /**
+     * 根据id删除GoodsInfo
+     *
+     * @param id
+     * @return
+     */
+    @Override
+    public Boolean removeGoodsInfo(Long id) {
+        //参数校验
+        if (id == null) {
+            throw new RuntimeException("参数错误");
+        }
+        //删除goods_info
+        int delete = goodsInfoMapper.deleteById(id);
+        if (delete <= 0) {
+            throw new RuntimeException("删除失败");
+        }
+        //删除goods_sku_relation
+        boolean remove = goodsSkuRelationService.remove(
+                new LambdaQueryWrapper<GoodsSkuRelation>()
+                        .eq(GoodsSkuRelation::getGoodsId, id));
+        if (!remove) {
+            throw new RuntimeException("删除失败");
+        }
+        return true;
+    }
+
+    /**
+     * 根据id和status修改启用和下线状态
+     *
+     * @param id
+     * @param status
+     * @return
+     */
+    @Override
+    public Boolean updateStatus(Long id, Integer status) {
+        return goodsInfoMapper.updateStatus(id, status);
+    }
+
+    private GoodsInfo packageGoodsInfo(GoodsInfo item) {
+        item.setTemperatureTypeName(dictService.getNameById(item.getTemperatureTypeId()));
+        item.setInspectTypeName(dictService.getNameById(item.getInspectTypeId()));
+        item.setGoodsTypeName(goodsTypeService.getNameById(item.getGoodsTypeId()));
+        item.setUnitName(dictService.getNameById(item.getUnitId()));
+        item.setBaseUnitName(dictService.getNameById(item.getBaseUnitId()));
+        return item;
+    }
+
+    @Override
+    public List<GoodsInfo> findByKeyword(String keyword) {
+        LambdaQueryWrapper<GoodsInfo> queryWrapper = new LambdaQueryWrapper();
+        queryWrapper.like(GoodsInfo::getName, keyword);
+        List<GoodsInfo> list = this.list(queryWrapper);
+        list.forEach(item -> {
+            this.packageGoodsInfo(item);
+        });
+        return list;
+    }
+
+    @Override
+    public GoodsInfo getGoodsInfo(Long id) {
+        GoodsInfo goodsInfo = this.getById(id);
+        GoodsSkuRelation goodsSkuRelation = goodsSkuRelationService.getByGoodsId(id);
+        if (null != goodsSkuRelation) {
+            goodsInfo.setSkuId(goodsSkuRelation.getSkuId());
+        }
+        return this.packageGoodsInfo(goodsInfo);
+    }
+
+    @Override
+    public GoodsInfo getGoodsInfoBySkuId(Long skuId) {
+        GoodsSkuRelation goodsSkuRelation = goodsSkuRelationService.getBySkuId(skuId);
+        if (null == goodsSkuRelation) return null;
+        GoodsInfo goodsInfo = this.getById(goodsSkuRelation.getGoodsId());
+        if (null != goodsInfo) {
+            goodsInfo.setSkuId(skuId);
+        }
+        return goodsInfo;
+    }
 
 
-
-
-	/**
-	 * 根据第三级分类id获取货品三级分类id列表
-	 * @param goodsTypeId
-	 * @return
-	 */
-	@Override
-	public List<String> findGoodsTypeIdList(Long goodsTypeId) {
-		GoodsType goodsType1 = goodsTypeService.getById(goodsTypeId);
-		GoodsType goodsType2 = goodsTypeService.getById(goodsType1.getParentId());
-		List<String> list = new ArrayList<>();
-		list.add(goodsType2.getParentId().toString());
-		list.add(goodsType1.getParentId().toString());
-		list.add(goodsTypeId.toString());
-		return list;
-	}
+    /**
+     * 根据第三级分类id获取货品三级分类id列表
+     *
+     * @param goodsTypeId
+     * @return
+     */
+    @Override
+    public List<String> findGoodsTypeIdList(Long goodsTypeId) {
+        GoodsType goodsType1 = goodsTypeService.getById(goodsTypeId);
+        GoodsType goodsType2 = goodsTypeService.getById(goodsType1.getParentId());
+        List<String> list = new ArrayList<>();
+        list.add(goodsType2.getParentId().toString());
+        list.add(goodsType1.getParentId().toString());
+        list.add(goodsTypeId.toString());
+        return list;
+    }
 
 
 }

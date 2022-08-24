@@ -19,4 +19,10 @@ public interface GoodsTypeService extends IService<GoodsType> {
      * @return
      */
     List<GoodsType> findByParentId(Long parentId);
+
+    /**
+     * 查询一二三三级分类
+     * @return
+     */
+    List<GoodsType> findNodes();
 }

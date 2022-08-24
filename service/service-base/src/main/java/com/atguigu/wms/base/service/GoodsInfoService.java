@@ -17,6 +17,42 @@ public interface GoodsInfoService extends IService<GoodsInfo> {
      */
     Page<GoodsInfo> findPage(Page<GoodsInfo> page, GoodsInfoQueryVo goodsInfoQueryVo);
 
+    /**
+     * 新增货品
+     * @param goodsInfo
+     * @return
+     */
+    Boolean insert(GoodsInfo goodsInfo);
+
+    /**
+     * 根据id查询货品
+     * @param id
+     * @return
+     */
+    GoodsInfo get(Long id);
+
+    /**
+     * 更新货品
+     * @param goodsInfo
+     * @return
+     */
+    Boolean updateGoodsInfo(GoodsInfo goodsInfo);
+
+    /**
+     * 根据id删除GoodsInfo
+     * @param id
+     * @return
+     */
+    Boolean removeGoodsInfo(Long id);
+
+    /**
+     * 根据id和status修改启用和下线状态
+     * @param id
+     * @param status
+     * @return
+     */
+    Boolean updateStatus(Long id, Integer status);
+
     List<GoodsInfo> findByKeyword(String keyword);
 
     GoodsInfo getGoodsInfo(Long id);
@@ -24,5 +60,4 @@ public interface GoodsInfoService extends IService<GoodsInfo> {
     GoodsInfo getGoodsInfoBySkuId(Long skuId);
 
     List<String> findGoodsTypeIdList(Long goodsTypeId);
-
 }
