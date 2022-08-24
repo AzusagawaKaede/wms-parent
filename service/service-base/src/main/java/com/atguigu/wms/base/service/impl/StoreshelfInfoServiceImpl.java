@@ -170,6 +170,19 @@ public class StoreshelfInfoServiceImpl extends ServiceImpl<StoreshelfInfoMapper,
         return storeshelfInfoMapper.decreaseStorehouse(storeareaId);
     }
 
+    /**
+     * 根据id查询货架
+     *
+     * @param id
+     * @return
+     */
+    @Override
+    public List<StoreshelfInfo> findByStoreareaId(Long id) {
+        return storeshelfInfoMapper.selectList(
+                new LambdaQueryWrapper<StoreshelfInfo>()
+                        .eq(StoreshelfInfo::getStoreareaId, id));
+    }
+
     @Cacheable(value = "storeshelfInfo", keyGenerator = "keyGenerator")
     @Override
     public String getNameById(Long id) {

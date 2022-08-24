@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.atguigu.wms.base.mapper.StorehouseInfoMapper">
+
+    <select id="findPage" resultType="com.atguigu.wms.model.base.StorehouseInfo">
+        select
+            si.*,
+            wi.name warehouse_name,
+            si2.name storearea_name,
+            si3.name storeshelf_name
+        from
+            storehouse_info si
+            left join warehouse_info wi on si.warehouse_id = wi.id
+            left join storearea_info si2 on si.storearea_id = si2.id
+            left join storeshelf_info si3 on si.storeshelf_id = si3.id
+        where
+            si.is_deleted = 0
+        <if test="storehouseInfoQueryVo.warehouseId != '' and storehouseInfoQueryVo.warehouseId != null">
+            and si.warehouse_id = #{storehouseInfoQueryVo.warehouseId}
+        </if>
+        <if test="storehouseInfoQueryVo.storeareaId != '' and storehouseInfoQueryVo.storeareaId != null">
+            and si.storearea_id = #{storehouseInfoQueryVo.storeareaId}
+        </if>
+        <if test="storehouseInfoQueryVo.storeshelfId != '' and storehouseInfoQueryVo.storeshelfId != null">
+            and si.storeshelf_id = #{storehouseInfoQueryVo.storeshelfId}
+        </if>
+        <if test="storehouseInfoQueryVo.name != '' and storehouseInfoQueryVo.name != null">
+            and si.name = #{storehouseInfoQueryVo.name}
+        </if>
+    </select>
+</mapper>
+

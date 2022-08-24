@@ -98,6 +98,16 @@ public class StoreshelfInfoController {
 		}
 	}
 
+	/**
+	 * 根据id查询货架
+	 * @param id
+	 * @return
+	 */
+	@GetMapping("/findByStoreareaId/{id}")
+	public Result findByStoreareaId(@PathVariable Long id){
+		return Result.ok(storeshelfInfoService.findByStoreareaId(id));
+	}
+
 	@ApiOperation(value = "根据id列表删除")
 	@DeleteMapping("batchRemove")
 	public Result batchRemove(@RequestBody List<Long> idList) {

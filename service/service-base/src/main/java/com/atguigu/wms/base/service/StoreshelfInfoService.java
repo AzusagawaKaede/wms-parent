@@ -7,6 +7,8 @@ import com.atguigu.wms.vo.base.StoreshelfInfoQueryVo;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.util.List;
+
 
 public interface StoreshelfInfoService extends IService<StoreshelfInfo> {
 
@@ -55,4 +57,10 @@ public interface StoreshelfInfoService extends IService<StoreshelfInfo> {
 
     String getNameById(Long id);
 
+    /**
+     * 根据id查询货架
+     * @param id
+     * @return
+     */
+    List<StoreshelfInfo> findByStoreareaId(Long id);
 }
