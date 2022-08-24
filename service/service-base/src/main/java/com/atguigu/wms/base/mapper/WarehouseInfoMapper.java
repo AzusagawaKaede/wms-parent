@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Update;
 import org.springframework.stereotype.Repository;
 
 @Mapper
@@ -20,4 +21,20 @@ public interface WarehouseInfoMapper extends BaseMapper<WarehouseInfo> {
      * @return
      */
     Page<WarehouseInfo> findPage(Page<WarehouseInfo> page, @Param("warehouseInfoQueryVo") WarehouseInfoQueryVo warehouseInfoQueryVo);
+
+    /**
+     * 新增库区
+     * @param warehouseId
+     * @return
+     */
+    @Update("update warehouse_info set storearea_count = storearea_count + 1 where id = #{warehouseId}")
+    int addStorearea(Long warehouseId);
+
+    /**
+     * 减少库区
+     * @param warehouseId
+     * @return
+     */
+    @Update("update warehouse_info set storearea_count = storearea_count - 1 where id = #{warehouseId}")
+    int decrease(Long warehouseId);
 }

@@ -58,6 +58,56 @@ public class WarehouseInfoServiceImpl extends ServiceImpl<WarehouseInfoMapper, W
 		return warehouseInfoMapper.findPage(page, warehouseInfoQueryVo);
 	}
 
+	/**
+	 * 根据id删除仓库
+	 *
+	 * @param id
+	 * @return
+	 */
+	@Override
+	public boolean removeWarehouse(Long id) {
+		//参数校验
+		if (id == null) {
+			throw new RuntimeException("参数错误");
+		}
+		//根据id查询，判断数量是否允许删除
+		WarehouseInfo warehouseInfo = warehouseInfoMapper.selectById(id);
+		if(warehouseInfo != null &&
+				(warehouseInfo.getStoreareaCount() !=0 ||
+						warehouseInfo.getStorehouseCount() !=0 ||
+						warehouseInfo.getStoreshelfCount() != 0)){
+			throw new RuntimeException("库区数或货架数或库位数不为0，不允许删除");
+		}
+		//删除
+		int delete = warehouseInfoMapper.deleteById(id);
+		if(delete < 0){
+			throw new RuntimeException("删除失败");
+		}
+		return true;
+	}
+
+	/**
+	 * 货区+1
+	 *
+	 * @param warehouseId
+	 * @return
+	 */
+	@Override
+	public int addStorearea(Long warehouseId) {
+		return warehouseInfoMapper.addStorearea(warehouseId);
+	}
+
+	/**
+	 * 货区+1
+	 *
+	 * @param warehouseId
+	 * @return
+	 */
+	@Override
+	public int decrease(Long warehouseId) {
+		return warehouseInfoMapper.decrease(warehouseId);
+	}
+
 	@Override
 	public String getNameById(Long id) {
 		if(null == id) return "";

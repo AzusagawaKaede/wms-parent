@@ -21,6 +21,27 @@ public interface WarehouseInfoService extends IService<WarehouseInfo> {
      */
     Page<WarehouseInfo> findPage(Page<WarehouseInfo> page, WarehouseInfoQueryVo warehouseInfoQueryVo);
 
+    /**
+     * 根据id删除仓库
+     * @param id
+     * @return
+     */
+    boolean removeWarehouse(Long id);
+
+    /**
+     * 货区-1
+     * @param warehouseId
+     * @return
+     */
+    int decrease(Long warehouseId);
+
+    /**
+     * 货区+1
+     * @param warehouseId
+     * @return
+     */
+    int addStorearea(Long warehouseId);
+
     String getNameById(Long id);
 
     List<Map<String, Object>> findNodes();

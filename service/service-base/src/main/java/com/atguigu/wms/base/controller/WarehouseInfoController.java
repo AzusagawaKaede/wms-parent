@@ -45,7 +45,7 @@ public class WarehouseInfoController {
     @GetMapping("/{pageNum}/{pageSize}")
     public Result findPage(@PathVariable Long pageNum,
                            @PathVariable Long pageSize,
-                           @RequestParam(required = false) WarehouseInfoQueryVo warehouseInfoQueryVo) {
+                           WarehouseInfoQueryVo warehouseInfoQueryVo) {
         Page<WarehouseInfo> page = new Page<>(pageNum, pageSize);
         return Result.ok(warehouseInfoService.findPage(page, warehouseInfoQueryVo));
     }
@@ -117,14 +117,23 @@ public class WarehouseInfoController {
 	 * @param id
 	 * @return
 	 */
-	@DeleteMapping("/delete/{id}")
+	@DeleteMapping("/remove/{id}")
     public Result delete(@PathVariable Long id) {
-        boolean remove = warehouseInfoService.removeById(id);
+        boolean remove = warehouseInfoService.removeWarehouse(id);
         if (remove) {
 			return Result.ok();
         }else {
         	return Result.fail("删除失败");
 		}
+    }
+
+    /**
+     * 查询所有仓库信息
+     * @return
+     */
+    @GetMapping("/findAll")
+    public Result findAll(){
+        return Result.ok(warehouseInfoService.list());
     }
 
     @ApiOperation(value = "根据id列表删除")

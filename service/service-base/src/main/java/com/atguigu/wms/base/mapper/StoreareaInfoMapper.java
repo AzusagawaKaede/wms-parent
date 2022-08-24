@@ -13,4 +13,11 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface StoreareaInfoMapper extends BaseMapper<StoreareaInfo> {
 
+    /**
+     * 分页条件查询
+     * @param page
+     * @param storeareaInfoQueryVo
+     * @return
+     */
+    Page<StoreareaInfo> findPage(Page<StoreareaInfo> page, @Param("storeareaInfoQueryVo") StoreareaInfoQueryVo storeareaInfoQueryVo);
 }
