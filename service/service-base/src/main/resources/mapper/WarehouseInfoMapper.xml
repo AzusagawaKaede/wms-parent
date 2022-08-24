@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.atguigu.wms.base.mapper.WarehouseInfoMapper">
+
+    <sql id="common">
+        SELECT
+            wi.*,
+            di.NAME province_name,
+            di2.NAME city_name,
+            di3.NAME area_name
+        FROM
+            warehouse_info wi
+            LEFT JOIN dict_info di ON wi.province_id = di.id
+            LEFT JOIN dict_info di2 ON wi.city_id = di2.id
+            LEFT JOIN dict_info di3 ON wi.area_id = di3.id
+        where
+            wi.is_deleted = 0
+    </sql>
+
+    <select id="findPage" resultType="com.atguigu.wms.model.base.WarehouseInfo">
+        <include refid="common"/>
+        <if test="warehouseInfoQueryVo.name != '' and warehouseInfoQueryVo.name != null">
+            and wi.name like '%${warehouseInfoQueryVo.name}%'
+        </if>
+        <if test="warehouseInfoQueryVo.type != '' and warehouseInfoQueryVo.type != null">
+            and wi.type = #{warehouseInfoQueryVo.type}
+        </if>
+        <if test="warehouseInfoQueryVo.provinceId != '' and warehouseInfoQueryVo.provinceId != null">
+            and wi.province_id = #{warehouseInfoQueryVo.provinceId}
+        </if>
+        <if test="warehouseInfoQueryVo.cityId != '' and warehouseInfoQueryVo.cityId != null">
+            and wi.city_id = #{warehouseInfoQueryVo.cityId}
+        </if>
+        <if test="warehouseInfoQueryVo.areaId != '' and warehouseInfoQueryVo.areaId != null">
+            and wi.area_id = #{warehouseInfoQueryVo.areaId}
+        </if>
+    </select>
+
+</mapper>
+
