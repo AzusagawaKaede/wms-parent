@@ -42,6 +42,20 @@ public interface WarehouseInfoService extends IService<WarehouseInfo> {
      */
     int addStorearea(Long warehouseId);
 
+    /**
+     * 货区-1
+     * @param warehouseId
+     * @return
+     */
+    int decreaseStoreshelf(Long warehouseId);
+
+    /**
+     * 货区+1
+     * @param warehouseId
+     * @return
+     */
+    int addStoreshelf(Long warehouseId);
+
     String getNameById(Long id);
 
     List<Map<String, Object>> findNodes();

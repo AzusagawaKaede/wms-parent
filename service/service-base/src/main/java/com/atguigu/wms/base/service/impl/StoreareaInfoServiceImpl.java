@@ -32,7 +32,7 @@ public class StoreareaInfoServiceImpl extends ServiceImpl<StoreareaInfoMapper, S
     @Autowired
     private StoreareaInfoMapper storeareaInfoMapper;
     @Autowired
-	private WarehouseInfoService warehouseInfoService;
+    private WarehouseInfoService warehouseInfoService;
 
     /**
      * 分页条件连表查询
@@ -94,9 +94,9 @@ public class StoreareaInfoServiceImpl extends ServiceImpl<StoreareaInfoMapper, S
             throw new RuntimeException("参数错误");
         }
         //修改更新时间
-		storeareaInfo.setUpdateId(1L);
-		storeareaInfo.setUpdateName("admin");
-		storeareaInfo.setUpdateTime(new Date());
+        storeareaInfo.setUpdateId(1L);
+        storeareaInfo.setUpdateName("admin");
+        storeareaInfo.setUpdateTime(new Date());
         //查询原来的info，判断仓库id是否一致
         StoreareaInfo info = storeareaInfoMapper.selectById(storeareaInfo.getId());
         if (info.getWarehouseId().equals(storeareaInfo.getWarehouseId())) {
@@ -107,46 +107,79 @@ public class StoreareaInfoServiceImpl extends ServiceImpl<StoreareaInfoMapper, S
             }
         } else {
             //不一致先对仓库-1，然后新增，再对新仓库+1
-			int decrease = warehouseInfoService.decrease(info.getWarehouseId());
-			int update = storeareaInfoMapper.updateById(storeareaInfo);
-			int add = warehouseInfoService.addStorearea(storeareaInfo.getWarehouseId());
-			if(decrease <=0 || update <= 0 || add <= 0){
-				throw new RuntimeException("更新失败");
-			}
-		}
+            int decrease = warehouseInfoService.decrease(info.getWarehouseId());
+            int update = storeareaInfoMapper.updateById(storeareaInfo);
+            int add = warehouseInfoService.addStorearea(storeareaInfo.getWarehouseId());
+            if (decrease <= 0 || update <= 0 || add <= 0) {
+                throw new RuntimeException("更新失败");
+            }
+        }
         return true;
     }
 
-	/**
-	 * 根据id删除
-	 *
-	 * @param id
-	 * @return
-	 */
-	@Override
-	public Boolean removeStoreareaInfo(Long id) {
-		//参数校验
-		if (id == null) {
-			throw new RuntimeException("参数错误");
-		}
-		//先查询货架数和库位数，非0不允许删除
-		StoreareaInfo storeareaInfo = storeareaInfoMapper.selectById(id);
-		//判断是否存在
-		if (storeareaInfo != null &&
-				(storeareaInfo.getStorehouseCount() != 0 ||
-				storeareaInfo.getStoreshelfCount() != 0)) {
-			throw new RuntimeException("货架数或库存数不为0，不可删除");
-		}
-		//为0则删除
-		int delete = storeareaInfoMapper.deleteById(id);
-		int delete2 = warehouseInfoService.decrease(storeareaInfo.getWarehouseId());
-		if(delete < 0 || delete2 < 0){
-			throw new RuntimeException("删除失败");
-		}
-		return true;
-	}
+    /**
+     * 根据id删除
+     *
+     * @param id
+     * @return
+     */
+    @Override
+    public Boolean removeStoreareaInfo(Long id) {
+        //参数校验
+        if (id == null) {
+            throw new RuntimeException("参数错误");
+        }
+        //先查询货架数和库位数，非0不允许删除
+        StoreareaInfo storeareaInfo = storeareaInfoMapper.selectById(id);
+        //判断是否存在
+        if (storeareaInfo != null &&
+                (storeareaInfo.getStorehouseCount() != 0 ||
+                        storeareaInfo.getStoreshelfCount() != 0)) {
+            throw new RuntimeException("货架数或库存数不为0，不可删除");
+        }
+        //为0则删除
+        int delete = storeareaInfoMapper.deleteById(id);
+        int delete2 = warehouseInfoService.decrease(storeareaInfo.getWarehouseId());
+        if (delete < 0 || delete2 < 0) {
+            throw new RuntimeException("删除失败");
+        }
+        return true;
+    }
 
-	@Cacheable(value = "storeareaInfo", keyGenerator = "keyGenerator")
+    /**
+     * +1
+     *
+     * @param storeareaId
+     * @return
+     */
+    @Override
+    public int addStoreshlef(Long storeareaId) {
+        return storeareaInfoMapper.addStoreshlef(storeareaId);
+    }
+
+    /**
+     * 库区-1
+     *
+     * @param storeareaId
+     * @return
+     */
+    @Override
+    public int decrease(Long storeareaId) {
+        return storeareaInfoMapper.decrease(storeareaId);
+    }
+
+    /**
+     * 根据仓库查询库区
+     *
+     * @param id
+     * @return
+     */
+    @Override
+    public List<WarehouseInfo> findByWarehouseId(Long id) {
+        return warehouseInfoService.list(new LambdaQueryWrapper<WarehouseInfo>().eq(WarehouseInfo::getId, id));
+    }
+
+    @Cacheable(value = "storeareaInfo", keyGenerator = "keyGenerator")
     @Override
     public String getNameById(Long id) {
         if (null == id) return "";

@@ -41,5 +41,27 @@ public interface StoreareaInfoService extends IService<StoreareaInfo> {
      */
     Boolean removeStoreareaInfo(Long id);
 
+    /**
+     * +1
+     * @param storeareaId
+     * @return
+     */
+    int addStoreshlef(Long storeareaId);
+
     String getNameById(Long id);
+
+    /**
+     * +1
+     * @param storeareaId
+     * @return
+     */
+    int decrease(Long storeareaId);
+
+    /**
+     * 根据仓库查询库区
+     * @param id
+     * @return
+     */
+    List<WarehouseInfo> findByWarehouseId(Long id);
+
 }

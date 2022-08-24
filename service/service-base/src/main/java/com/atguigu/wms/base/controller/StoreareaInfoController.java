@@ -105,6 +105,15 @@ public class StoreareaInfoController {
 		}
 	}
 
+	/**
+	 * 根据仓库id查询所有的库区
+	 * @param id
+	 * @return
+	 */
+	@GetMapping("/findByWarehouseId/{id}")
+	public Result findByWarehouseId(@PathVariable Long id){
+		return Result.ok(storeareaInfoService.findByWarehouseId(id));
+	}
 
 	@ApiOperation(value = "获取对象")
 	@GetMapping("getStoreareaInfo/{id}")

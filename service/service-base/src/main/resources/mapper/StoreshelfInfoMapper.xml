@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.atguigu.wms.base.mapper.StoreshelfInfoMapper">
+
+    <select id="findPage" resultType="com.atguigu.wms.model.base.StoreshelfInfo">
+        select
+            si.*,
+            wi.name warehouse_name,
+            si2.name storearea_name,
+            di.name house_type_name,
+            di2.name temperature_type_name
+        from
+            storeshelf_info si
+            left join warehouse_info wi on si.warehouse_id = wi.id
+            left join storearea_info si2 on si.storearea_id = si2.id
+            left join dict_info di on si.house_type_id = di.id
+            left join dict_info di2 on si.temperature_type_id = di2.id
+        where
+            si.is_deleted = 0
+        <if test="storeshelfInfoQueryVo.warehouseId != '' and storeshelfInfoQueryVo.warehouseId != null">
+            and si.warehouse_id = #{storeshelfInfoQueryVo.warehouseId}
+        </if>
+        <if test="storeshelfInfoQueryVo.storeareaId != '' and storeshelfInfoQueryVo.storeareaId != null">
+            and si.storearea_id = #{storeshelfInfoQueryVo.storeareaId}
+        </if>
+        <if test="storeshelfInfoQueryVo.name != '' and storeshelfInfoQueryVo.name != null">
+            and si.name = #{storeshelfInfoQueryVo.name}
+        </if>
+        <if test="storeshelfInfoQueryVo.houseTypeId != '' and storeshelfInfoQueryVo.houseTypeId != null">
+            and si.house_type_id = #{storeshelfInfoQueryVo.houseTypeId}
+        </if>
+    </select>
+</mapper>
+

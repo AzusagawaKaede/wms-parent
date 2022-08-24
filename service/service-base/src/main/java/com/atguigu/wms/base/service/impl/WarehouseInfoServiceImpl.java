@@ -98,7 +98,7 @@ public class WarehouseInfoServiceImpl extends ServiceImpl<WarehouseInfoMapper, W
 	}
 
 	/**
-	 * 货区+1
+	 * 货区-1
 	 *
 	 * @param warehouseId
 	 * @return
@@ -106,6 +106,28 @@ public class WarehouseInfoServiceImpl extends ServiceImpl<WarehouseInfoMapper, W
 	@Override
 	public int decrease(Long warehouseId) {
 		return warehouseInfoMapper.decrease(warehouseId);
+	}
+
+	/**
+	 * 货区+1
+	 *
+	 * @param warehouseId
+	 * @return
+	 */
+	@Override
+	public int addStoreshelf(Long warehouseId) {
+		return warehouseInfoMapper.addStoreshelf(warehouseId);
+	}
+
+	/**
+	 * 货区-1
+	 *
+	 * @param warehouseId
+	 * @return
+	 */
+	@Override
+	public int decreaseStoreshelf(Long warehouseId) {
+		return warehouseInfoMapper.decreaseStoreshelf(warehouseId);
 	}
 
 	@Override
